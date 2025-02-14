@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Coconat";
+  font-weight: normal;
+  src: url("../../public/fonts/Coconat-Regular.woff2");
+}
+
+@font-face {
+  font-family: "Coconat";
+  font-weight: bold;
+  src: url("../../public/fonts/Coconat-Bold.woff2");
+}
+
+:root {
+  --bg: #ebe8e1;
+  --bg-trans: #ebe8e19c;
+  --mg: #c2b9a7;
+  --text: #120d01;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: "Coconat", Helvetica, sans-serif;
+}
