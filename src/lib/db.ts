@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { User } from "./models/User";
 import { IPiece, Piece } from "./models/Piece";
 import { IOutfit, Outfit } from "./models/Outfit";
+import { IImage, Image } from './models/Image';
 
 export type GetPieceResult = {
     code: 200
@@ -116,10 +117,22 @@ export async function getNextOutfitID() {
     return await Outfit.countDocuments({});
 }
 
-export async function deletePiece(id: number) {
-    await Piece.findByIdAndDelete(id);
+export async function deletePiece(_id: number, user_id: number) {
+    return Piece.deleteOne({ _id, user_id });
 }
 
-export async function deleteOutfit(id: number) {
-    await Outfit.findByIdAndDelete(id);
+export async function deleteOutfit(_id: number, user_id: number) {
+    return Outfit.deleteOne({ _id, user_id });
+}
+
+export async function addImage(data: IImage) {
+    new Image(data).save();
+}
+
+export async function getImage(type: "piece" | 'outfit', item_id: number) {
+    return Image.findOne({ type, item_id }) as Promise<IImage | null>;
+}
+
+export async function deleteImage(type: "piece" | "outfit", item_id: number) {
+    return Image.deleteOne({ type, item_id });
 }

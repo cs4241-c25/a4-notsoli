@@ -4,13 +4,15 @@ import Toggle from "@/components/Toggle";
 import Item from "@/components/Item";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { IPiece } from "@/lib/models/Piece";
 import { IOutfit } from "@/lib/models/Outfit";
 
 export default function Manage() {
+    const router = useRouter();
+
     const [pieces, setPieces] = useState<IPiece[]>([]);
     const [outfits, setOutfits] = useState<IOutfit[]>([]);
-    const [getItemsStatus, setGetItemsStatus] = useState("");
 
     const [type, fSetType] = useState<"piece" | "outfit">("piece");
     function setType(v: unknown) {
@@ -42,41 +44,79 @@ export default function Manage() {
         fSelect(item);
     }
 
-    function add(data: FormData) {
+    async function toBase64(file: File) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
+    };
+
+    async function add(data: FormData) {
+        const item = {
+            description: data.get("description"),
+            data: await toBase64(data.get("image") as File),
+            pieces: (type == "piece") ? [] : 
+                data.getAll("piece").map((p) => parseInt(p as string))
+        }
         
+        const response = await fetch(`/api/add/${type}`, {
+            method: "POST",
+            body: JSON.stringify(item)
+        });
+
+        if (response.ok) router.push("/");
     }
 
-    function edit(data: FormData) {
+    async function edit(data: FormData) {
+        if (!selected) return;
 
+        const item = {
+            item_id: selected._id.toString(),
+            description: data.get("description"),
+            pieces: (type == "piece") ? [] : 
+                data.getAll("piece").map((p) => parseInt(p as string))
+        }
+
+        const response = await fetch(`/api/edit/${type}`, {
+            method: "POST",
+            body: JSON.stringify(item)
+        });
+
+        if (response.ok) router.push("/");
     }
 
-    function remove(item: typeof selected) {
+    async function remove(event: React.MouseEvent<HTMLButtonElement>) {
+        event.preventDefault();
+        if (!confirm(`Are you sure you want to remove this ${type}?`)) return;
 
+        if (!selected) return;
+
+        const response = await fetch("/api/remove", {
+            method: "POST",
+            body: JSON.stringify({
+                type,
+                id: selected!._id
+            })
+        });
+
+        if (response.ok) router.push("/");
     }
 
     useEffect(() => {
         const fetchPieces = async () => {
             const result = await fetch("/api/pieces", { method: "GET" });
-            if (result.ok) {
-                setPieces(await result.json());
-            } else {
-                setGetItemsStatus("Failed to fetch items");
-            }
+            if (result.ok) setPieces(await result.json());
         }
 
         const fetchOutfits = async () => {
             const result = await fetch("/api/outfits", { method: "GET" });
-            if (result.ok) {
-                setOutfits(await result.json());
-            } else {
-                setGetItemsStatus("Failed to fetch items");
-            }
+            if (result.ok) setOutfits(await result.json());
         }
 
-        setGetItemsStatus("Fetching items...");
-        Promise.all([fetchPieces(), fetchOutfits()]).then(() => {
-            setGetItemsStatus("");
-        })
+        fetchPieces();
+        fetchOutfits();
     }, []);
     
     return (
@@ -113,8 +153,12 @@ export default function Manage() {
                             ))}
                         </ul>
                     }
-                    <label htmlFor="image"><h2>Image:</h2></label>
-                    <input type="file" name="image" id="image" />
+                    { action == "add" && 
+                        <div>
+                            <label htmlFor="image"><h2>Image:</h2></label>
+                            <input type="file" name="image" id="image" />
+                        </div>
+                    }
                     <label htmlFor="description"><h2>Description:</h2></label>
                     <textarea
                         name="description" id="description" className="w-[20em]"
@@ -137,10 +181,10 @@ export default function Manage() {
                             ))}
                         </ul>
                     }
-                    <div className="flex gap-4">
-                        <button type="submit">{action == "add" ? "Add" : "Edit"}</button>
+                    <div className="flex gap-4 my-4 underline">
+                        <button type="submit">{action == "add" ? "Add" : "Edit"} {type}</button>
                         { action == "edit" &&
-                        <button onClick={() => remove(selected)}>Remove</button>}
+                        <button onClick={remove}>Remove {type}</button>}
                     </div>
                 </form>
             </section>

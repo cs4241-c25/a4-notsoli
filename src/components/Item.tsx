@@ -10,7 +10,7 @@ export default function Item({
     return (
         <div className={type + " relative group item w-full h-full"}>
             <img
-                src={`/images/${type}s/${item._id}.png`}
+                src={`/images/${type}s/${item._id}`}
                 alt={item.description}
                 className="w-full h-full object-contain object-center"/
             >

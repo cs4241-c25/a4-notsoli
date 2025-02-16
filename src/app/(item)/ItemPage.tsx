@@ -21,7 +21,7 @@ export default function ItemPage({
 				<main className="flex m-4 h-full">
 					<section id="item" className="w-[50%] flex flex-col gap-2">
 						<h1>{type == "outfit" ? "Outfit" : "Piece"}</h1>
-						<img src={`/images/${type}s/${item._id}.png`} alt={item.description} className="flex-grow h-0 object-contain" />
+						<img src={`/images/${type}s/${item._id}`} alt={item.description} className="flex-grow h-0 object-contain" />
 						<p>{item.description}</p>
 					</section>
 					<section id="related-items" className="w-[50%] flex flex-col">
