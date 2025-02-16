@@ -23,13 +23,16 @@ export default function Account() {
     }
 
     return (
-        <main>
-            <form action={submit}>
-                <label htmlFor="username">Username:</label>
-                <input type="text" name="username" id="username" required />
-                <label htmlFor="password">Password</label>
-                <input type="password" name="password" id="password" required />
-                <button type="submit">Login/Register</button>
+        <main className="flex flex-col w-full h-full justify-center items-center">
+            <h2>Login/Register</h2>
+            <form action={submit} className="flex flex-col w-[20em]">
+                <label htmlFor="username" className="mt-4 mb-1">Username:</label>
+                <input type="text" name="username" id="username" required 
+                    className="rounded-md border-[2px] border-[--mg] p-0.5" />
+                <label htmlFor="password" className="mt-4 mb-1">Password</label>
+                <input type="password" name="password" id="password" required
+                    className="rounded-md border-[2px] border-[--mg] p-0.5" />
+                <button type="submit" className="underline my-4">Login/Register</button>
                 <p>{loginStatus}</p>
             </form>
         </main>

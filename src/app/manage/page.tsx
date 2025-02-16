@@ -161,8 +161,9 @@ export default function Manage() {
                     }
                     <label htmlFor="description"><h2>Description:</h2></label>
                     <textarea
-                        name="description" id="description" className="w-[20em]"
+                        name="description" id="description"
                         defaultValue={(action == "edit" && selected != null) ? selected.description : ""}
+                        className="w-[20em] rounded-md border-[2px] border-[--mg]"
                     />
                     { type == "outfit" && <h2>Items:</h2>}
                     { type == "outfit" && 
